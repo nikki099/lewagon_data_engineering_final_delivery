@@ -8,8 +8,11 @@ import requests
 
 from dotenv import load_dotenv
 
+from googletrans import Translator
 import snowflake.connector
 from sqlalchemy import create_engine
+
+translator = Translator()
 
 # Setup logging
 logging.basicConfig(
@@ -153,6 +156,18 @@ def merge_duplicates(df_old, df_new):
     logger.info("Merge complete.")
     return merged_df
 
+def translate_text(text, target_language='en'):
+    try:
+        if not text or pd.isna(text) or str(text).strip().lower() in ['nan', 'na']:
+            logger.warning("Empty or invalid text provided for translation. Returning 'NA'.")
+            return 'NA'
+        translated_text = translator.translate(text, dest=target_language)
+        logger.info(f"Translated '{text}' to '{translated_text.text}'")
+        return translated_text.text
+    except Exception as e:
+        logger.error(f"Error translating text '{text}': {e}")
+        return text
+
 def load_to_snowflake(df_merged, user, password, account, warehouse, database, schema, table_name):
     logger.info(f"Loading processed data to Snowflake table: {table_name} ...")
     engine = create_engine(
@@ -220,7 +235,19 @@ def main():
     # 7. Remove duplicates and prepare for upload
     df_merged = merge_duplicates(df_old, df_daily_all)
 
-    # 8. Load processed data back to Snowflake
+    #8. Translate business name, city, state and seniority to English
+
+    df_merged['CITY'] = df_merged['CITY'].apply(lambda x: translate_text(x, target_language='en'))
+
+    df_merged['STATE'] = df_merged['STATE'].apply(lambda x: translate_text(x, target_language='en'))
+
+    df_merged['ORGANIZATION'] = df_merged['ORGANIZATION'].apply(lambda x: translate_text(x, target_language='en'))
+
+    df_merged['SENIORITY'] = df_merged['SENIORITY'].apply(lambda x: translate_text(x, target_language='en'))
+
+
+
+    # 9. Load processed data back to Snowflake
     load_to_snowflake(df_merged, user, snowflake_password, account, warehouse, database, schema, 'linkedin_job_api_cleaned_data')
     logger.info("Pipeline finished successfully.")
 

@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: linkedin_raw
+    database: LINKEDIN_DB
+    schema: LINKEDIN_RAW
+    tables:
+      - name: "LINKEDIN_JOB_API_CLEANED_DATA"
+models:
+  - name: clean_job_title_data
+    description: |-
+      PULLED THe API cleaned data from Linkedin and only keep data engineer, data scientist and data analyst roles,
+      not cloud data platform engineer and etc.
