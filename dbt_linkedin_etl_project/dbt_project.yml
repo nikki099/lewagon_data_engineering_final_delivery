@@ -1,0 +1,6 @@
+name: 'dbt_linkedin_etl_project'
+version: '1.0'
+config-version: 2
+
+profile: 'dbt_linkedin_etl_project'
+model-paths: [ "models" ]
