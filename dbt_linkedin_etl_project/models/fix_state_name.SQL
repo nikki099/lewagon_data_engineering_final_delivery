@@ -1,6 +1,6 @@
 -- fix some wrong state names
 
-{{ config(materialized='view') }}
+{{ config(materialized='table') }}
 
 WITH STATE_BASE AS (
 SELECT CITY_STANDARDIZED, STATE
@@ -17,6 +17,7 @@ SELECT
         WHEN lower(STATE) IN ('of', 'on', 'australia', 'na') AND CITY_STANDARDIZED = 'Adelaide' THEN 'SA'
         WHEN lower(STATE) IN ('of', 'on', 'australia', 'na') AND CITY_STANDARDIZED = 'Hobart' THEN 'TAS'
         WHEN lower(STATE) IN ('of', 'on', 'australia', 'na') AND CITY_STANDARDIZED = 'Darwin' THEN 'NT'
+        WHEN lower(STATE) IN ('of', 'on', 'australia', 'na') AND CITY_STANDARDIZED = 'Woden' THEN 'ACT'
         WHEN lower(STATE) = 'na' THEN 'UNKNOWN'
         ELSE STATE
     END AS STATE_STANDARDIZED

@@ -1,9 +1,9 @@
-{{ config(materialized='view') }}
+{{ config(materialized='table') }}
 
 -- fix some wrong city names
 WITH CITY_BASE AS (
   SELECT DISTINCT CITY, STATE
-  FROM {{ ref('clean_job_title_data') }}
+  FROM {{ source('linkedin_raw', 'LINKEDIN_JOB_API_CLEANED_DATA') }}
 )
 SELECT
   CITY,
