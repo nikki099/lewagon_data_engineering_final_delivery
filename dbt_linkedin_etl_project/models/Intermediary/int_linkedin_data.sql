@@ -2,7 +2,7 @@
 
 
 WITH job_base AS (
-  SELECT DISTINCT -- duplicate the rows
+  SELECT DISTINCT -- deduplicate the rows
     ID, TITLE, JOB_CATEGORY,
     JOB_DATE, CITY, STATE, EMPLOYMENT_TYPE,
     ORGANIZATION, ORGANIZATION_URL, URL,
@@ -16,29 +16,29 @@ WITH job_base AS (
     LINKEDIN_ORG_DESCRIPTION, LINKEDIN_ORG_RECRUITMENT_AGENCY_DERIVED,
     SENIORITY, DIRECTAPPLY,
     LINKEDIN_ORG_SLUG
-  FROM {{ source('linkedin_raw', 'LINKEDIN_JOB_API_CLEANED_DATA') }}
+  FROM {{ source('linkedin_base', 'LINKEDIN_JOB_API_CLEANED_DATA') }}
 ),
 city AS (
    SELECT
-     DISTINCT CITY, CITY_STANDARDIZED, STATE -- duplicate the rows
-   FROM {{ source('linkedin_int', 'CITY') }}
+     DISTINCT CITY, CITY_STANDARDIZED, STATE -- deduplicate the rows
+   FROM {{ ref('base_city') }}
 ),
 state AS (
    SELECT
-    DISTINCT CITY_STANDARDIZED, STATE_STANDARDIZED -- duplicate the rows
-   FROM {{ source('linkedin_int', 'STATE') }}
+    DISTINCT CITY_STANDARDIZED, STATE_STANDARDIZED -- deduplicate the rows
+   FROM {{ ref('base_state') }}
 ),
 exp AS (
    SELECT
-    DISTINCT SENIORITY, SENIORITY_STANDARDIZED -- duplicate the rows
-   FROM {{ source('linkedin_int', 'JOB_SENIORITY') }}
+    DISTINCT SENIORITY, SENIORITY_STANDARDIZED -- deduplicate the rows
+   FROM {{ source('linkedin_base','JOB_SENIORITY') }}
 )
 SELECT
   jb.ID, jb.TITLE, jb.JOB_CATEGORY,
   jb.JOB_DATE, jb.EMPLOYMENT_TYPE,
-  MAX(c.CITY_STANDARDIZED) AS CITY, -- duplicate the rows
-  MAX(s.STATE_STANDARDIZED) AS STATE, -- duplicate the rows
-  MAX(exp.SENIORITY_STANDARDIZED) AS SENIORITY, -- duplicate the rows
+  MAX(c.CITY_STANDARDIZED) AS CITY, -- deduplicate the rows
+  MAX(s.STATE_STANDARDIZED) AS STATE, -- deduplicate the rows
+  MAX(exp.SENIORITY_STANDARDIZED) AS SENIORITY, --deduplicate the rows
   jb.ORGANIZATION, jb.ORGANIZATION_URL, jb.URL,
   jb.SOURCE_TYPE, jb.SOURCE, jb.SOURCE_DOMAIN,
   jb.ORGANIZATION_LOGO, jb.REMOTE_DERIVED,
@@ -54,7 +54,7 @@ FROM job_base AS jb
 JOIN city AS c ON jb.CITY = c.CITY
 JOIN state AS s ON c.CITY_STANDARDIZED = s.CITY_STANDARDIZED
 JOIN exp ON jb.SENIORITY = exp.SENIORITY
-GROUP BY -- duplicate the rows
+GROUP BY -- deduplicate the rows
   jb.ID, jb.TITLE, jb.JOB_CATEGORY,
   jb.JOB_DATE, jb.EMPLOYMENT_TYPE,
   jb.ORGANIZATION, jb.ORGANIZATION_URL, jb.URL,

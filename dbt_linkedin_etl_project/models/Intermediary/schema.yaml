@@ -4,11 +4,6 @@ sources:
 - name: linkedin_int
   database: LINKEDIN_DB
   schema: LINKEDIN_RAW
-  tables:
-  - name: "JOB_SENIORITY"
-  - name: "CITY"
-  - name: "STATE"
-  - name: "INT_LINKEDIN_DATA"
 
 models:
 - name: int_linkedin_data

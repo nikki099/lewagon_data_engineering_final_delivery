@@ -1,13 +1,15 @@
 version: 2
 
 sources:
-- name: linkedin_raw
+- name: linkedin_base
   database: LINKEDIN_DB
   schema: LINKEDIN_RAW
   tables:
   - name: "LINKEDIN_JOB_API_CLEANED_DATA"
+  - name: "JOB_SENIORITY"
+
 models:
-- name: city
+- name: base_city
   description: fixed various Austraian city names
-- name: state
+- name: base_state
   description: fixed various Austraian State names
