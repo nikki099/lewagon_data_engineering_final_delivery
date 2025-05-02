@@ -8,6 +8,7 @@ sources:
   - name: "JOB_SENIORITY"
   - name: "CITY"
   - name: "STATE"
+  - name: "INT_LINKEDIN_DATA"
 
 models:
 - name: int_linkedin_data

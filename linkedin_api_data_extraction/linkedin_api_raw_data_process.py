@@ -93,7 +93,7 @@ def extract_job_date(df):
 
 def extract_city(text):
     if pd.isna(text):
-        return None
+        return
     text = str(text)
     city_pattern = r"'addressLocality':\s*'(.*)',\s'addressRegion':"
     match = re.search(city_pattern, text)
@@ -185,6 +185,22 @@ def translate_text(text, target_language='en'):
         logger.error(f"Error translating text '{text}': {e}")
         return text
 
+
+def translate_column(df, col, target_language='en'):
+    #cache translation to avoid repeated requests
+    unique_vals = df[col].dropna().unique()
+    translation_map = {}
+    for val in unique_vals:
+        try:
+            translation_map[val] = translate_text(val, target_language)
+        except Exception as e:
+            logger.error(f"Error translating: {val}. Error: {e}")
+            translation_map[val] = val
+    df[col] = df[col].map(translation_map).fillna(df[col])
+    return df
+
+
+
 def load_to_snowflake(df_new_jobs, user, password, account, warehouse, database, schema, table_name):
 
     engine = create_engine(
@@ -259,7 +275,7 @@ def main():
     # 7. Translate key fields to English
     logger.info("Translating CITY, STATE, ORGANIZATION, SENIORITY ...")
     for col in ['CITY', 'STATE', 'ORGANIZATION', 'SENIORITY']:
-        df_new_jobs[col] = df_new_jobs[col].apply(lambda x: translate_text(x, target_language='en'))
+        df_new_jobs = translate_column(df_new_jobs, col, target_language='en')
 
     # 8. Load new jobs to Snowflake
     load_to_snowflake(
