@@ -4,7 +4,7 @@
 
 WITH STATE_BASE AS (
 SELECT CITY_STANDARDIZED, STATE
-FROM {{ ref('fix_city_name') }}
+FROM {{ ref('city') }}
 )
 SELECT
     DISTINCT CITY_STANDARDIZED,

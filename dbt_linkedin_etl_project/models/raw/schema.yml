@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+- name: linkedin_raw
+  database: LINKEDIN_DB
+  schema: LINKEDIN_RAW
+  tables:
+  - name: "LINKEDIN_JOB_API_CLEANED_DATA"
+models:
+- name: city
+  description: fixed various Austraian city names
+- name: state
+  description: fixed various Austraian State names
