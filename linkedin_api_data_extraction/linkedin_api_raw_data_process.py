@@ -24,33 +24,33 @@ translator = Translator()
 
 def extract_linkedin_job_data(rapidapi_key, rapidapi_host):
     logger.info("Starting LinkedIn job data extraction from API (last 24h)...")
-    # headers = {
-    #     'x-rapidapi-key': rapidapi_key,
-    #     'x-rapidapi-host': rapidapi_host
-    # }
-    # location = "Australia"
-    # limit = 100
-    # offset = 0
-    # titles = ["Data Engineer", "Data Scientist", "Data Analyst"]
-    # df_daily_all = pd.DataFrame()
+    headers = {
+        'x-rapidapi-key': rapidapi_key,
+        'x-rapidapi-host': rapidapi_host
+    }
+    location = "Australia"
+    limit = 100
+    offset = 0
+    titles = ["Data Engineer", "Data Scientist", "Data Analyst"]
+    df_daily_all = pd.DataFrame()
 
-    # for title_filter in titles:
-    #     title_encoded = urllib.parse.quote(title_filter)
-    #     location_encoded = urllib.parse.quote(location)
-    #     base_url = f"/active-jb-24h?limit={limit}&offset={offset}&title_filter={title_encoded}&location_filter={location_encoded}"
-    #     url = f"https://{rapidapi_host}{base_url}"
+    for title_filter in titles:
+        title_encoded = urllib.parse.quote(title_filter)
+        location_encoded = urllib.parse.quote(location)
+        base_url = f"/active-jb-24h?limit={limit}&offset={offset}&title_filter={title_encoded}&location_filter={location_encoded}"
+        url = f"https://{rapidapi_host}{base_url}"
 
-    #     response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers)
 
-    #     if response.status_code == 200:
-    #         data = response.json()
-    #         df_daily = json_normalize(data)
-    #         df_daily['JOB_CATEGORY'] = title_filter
-    #         logger.info(f"Fetched '{title_filter}' jobs: {df_daily.shape[0]} rows")
-    #         df_daily_all = pd.concat([df_daily_all, df_daily], ignore_index=True)
-    #     else:
-    #         logger.error(f"API error for '{title_filter}': HTTP {response.status_code}")
-    df_daily_all = pd.read_csv('linkedin_jobs_daily.csv')
+        if response.status_code == 200:
+            data = response.json()
+            df_daily = json_normalize(data)
+            df_daily['JOB_CATEGORY'] = title_filter
+            logger.info(f"Fetched '{title_filter}' jobs: {df_daily.shape[0]} rows")
+            df_daily_all = pd.concat([df_daily_all, df_daily], ignore_index=True)
+        else:
+            logger.error(f"API error for '{title_filter}': HTTP {response.status_code}")
+    # df_daily_all = pd.read_csv('linkedin_jobs_daily.csv')
 
     logger.info("LinkedIn job data extraction completed.")
     return df_daily_all
