@@ -8,3 +8,4 @@ logs/
 
 # 如果你把密钥放在 credentials 文件夹
 credentials/
+linkedin_api_data_extraction/credentials/*.json
