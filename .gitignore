@@ -43,3 +43,9 @@ htmlcov/
 # 其它临时文件
 *.bak
 *.swp
+
+
+#CONFIDENTIAL
+credentials/
+secrets/
+*.json
